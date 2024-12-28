@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "엔빵",
+    "slug": "nbbang",
+    "version": "1.0.3",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "versionCode": 5,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "nbbang.middle",
+      "packageQueries": [
+        {
+          "package": "com.kakao.talk"
+        }
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "owner": "moonjunyoung",
+    "extra": {
+      "eas": {
+        "projectId": "74e62581-bf35-43db-b531-3d847c03f099"
+      }
+    }
+  }
+}
