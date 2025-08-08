@@ -23,7 +23,7 @@ class App extends React.Component {
     super(props);
     this.webview = React.createRef();
     this.state = {
-      currentUrl: "https://nbbang.life/",
+      currentUrl: "https://nbbang.shop/",
       canGoBack: false,
     };
   }
@@ -40,10 +40,10 @@ class App extends React.Component {
     const { currentUrl, canGoBack } = this.state;
 
     if (
-      currentUrl === "https://nbbang.life/sign-in" ||
-      currentUrl === "https://nbbang.life/sign-up"
+      currentUrl === "https://nbbang.shop/sign-in" ||
+      currentUrl === "https://nbbang.shop/sign-up"
     ) {
-      this.setState({ currentUrl: "https://nbbang.life/signd" });
+      this.setState({ currentUrl: "https://nbbang.shop/signd" });
       return true;
     }
 
@@ -59,8 +59,8 @@ class App extends React.Component {
     const newUrl = navState.url;
 
     if (
-      newUrl === "https://nbbang.life/" ||
-      newUrl === "https://nbbang.life/signd"
+      newUrl === "https://nbbang.shop/" ||
+      newUrl === "https://nbbang.shop/signd"
     ) {
       this.setState({ currentUrl: newUrl, canGoBack: false });
     } else {
