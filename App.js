@@ -16,6 +16,9 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: Constants.statusBarHeight,
   },
+  webViewWrapper: {
+    flex: 1,
+  },
 });
 
 class App extends React.Component {
@@ -92,7 +95,6 @@ class App extends React.Component {
   };
 
   handleMessage = async (event) => {
-    console.log(event, "5325932=63840135308932410-3914=129=3921=95=");
     const { data } = event.nativeEvent;
     try {
       const message = JSON.parse(data);
@@ -106,19 +108,36 @@ class App extends React.Component {
     }
   };
 
+  renderWebView() {
+    const { currentUrl } = this.state;
+    const webViewCommon = {
+      source: { uri: currentUrl },
+      ref: this.webview,
+      onNavigationStateChange: this.handleNavigationStateChange,
+      userAgent:
+        "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
+      originWhitelist: ["intent", "https", "kakaotalk"],
+      onShouldStartLoadWithRequest: this.habdleIntentRequest,
+      onMessage: this.handleMessage,
+    };
+
+    // Android도 WebView 자체 스크롤을 씁니다. ScrollView로 문서 높이만큼 WebView를 키우면
+    // position:fixed 모달이 뷰포트 밖에 그려져 보이지 않는 문제가 납니다.
+    // pullToRefreshEnabled는 iOS 전용이라 Android에서는 새로고침은 메뉴/내비로 처리합니다.
+    return (
+      <WebView
+        {...webViewCommon}
+        style={styles.webViewWrapper}
+        pullToRefreshEnabled={Platform.OS === "ios"}
+      />
+    );
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <StatusBar backgroundColor="white" style="dark" />
-        <WebView
-          source={{ uri: this.state.currentUrl }}
-          ref={this.webview}
-          onNavigationStateChange={this.handleNavigationStateChange}
-          userAgent="Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36"
-          originWhitelist={["intent", "https", "kakaotalk"]}
-          onShouldStartLoadWithRequest={this.habdleIntentRequest}
-          onMessage={this.handleMessage}
-        />
+        {this.renderWebView()}
       </View>
     );
   }

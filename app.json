@@ -2,7 +2,7 @@
   "expo": {
     "name": "엔빵",
     "slug": "nbbang",
-    "version": "1.0.9",
+    "version": "1.0.11",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -15,7 +15,7 @@
       "supportsTablet": true
     },
     "android": {
-      "versionCode": 12,
+      "versionCode": 14,
       "package": "nbbang.middle",
       "packageQueries": [
         {
