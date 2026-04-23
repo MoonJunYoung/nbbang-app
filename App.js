@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: Constants.statusBarHeight,
+    backgroundColor: "white",
   },
   webViewWrapper: {
     flex: 1,
@@ -131,16 +132,75 @@ class App extends React.Component {
 
   renderWebView() {
     const { currentUrl, refreshing, webScrollY } = this.state;
-    const refreshEnabled = webScrollY <= 0;
+    const refreshEnabled = !refreshing && webScrollY <= 1;
     const injectedJavaScript = `
       (function () {
         var ticking = false;
+        var lastY = -1;
+
+        function getScrollYFromDocument() {
+          var se = document.scrollingElement || document.documentElement || document.body;
+          var y = 0;
+          if (se && typeof se.scrollTop === 'number') y = se.scrollTop;
+          // window.scrollY가 더 큰 경우가 있어 같이 반영
+          if (typeof window.scrollY === 'number') y = Math.max(y, window.scrollY);
+          if (document.documentElement && typeof document.documentElement.scrollTop === 'number') {
+            y = Math.max(y, document.documentElement.scrollTop);
+          }
+          if (document.body && typeof document.body.scrollTop === 'number') {
+            y = Math.max(y, document.body.scrollTop);
+          }
+          return y || 0;
+        }
+
+        // 사이트가 window가 아니라 특정 컨테이너(overflow:auto)를 스크롤로 쓰는 경우 대응
+        function getScrollableAncestorY(el) {
+          try {
+            var cur = el;
+            while (cur && cur !== document.documentElement && cur !== document.body) {
+              if (cur && typeof cur.scrollTop === 'number' && cur.scrollHeight > cur.clientHeight) {
+                var style = window.getComputedStyle(cur);
+                var overflowY = style ? style.overflowY : '';
+                if (overflowY === 'auto' || overflowY === 'scroll') {
+                  return cur.scrollTop || 0;
+                }
+              }
+              cur = cur.parentElement;
+            }
+          } catch (e) {}
+          return null;
+        }
+
         function postScroll() {
           try {
-            window.ReactNativeWebView.postMessage(JSON.stringify({ type: "scroll", y: window.scrollY || 0 }));
+            var docY = getScrollYFromDocument();
+            // 마지막 scroll 이벤트 타겟 기준으로 더 정확한 값이 있으면 반영
+            var y = docY;
+            if (window.__rn_lastScrollTarget) {
+              var targetY = getScrollableAncestorY(window.__rn_lastScrollTarget);
+              if (typeof targetY === 'number') y = Math.max(y, targetY);
+            }
+            if (y === lastY) return;
+            lastY = y;
+            window.ReactNativeWebView.postMessage(JSON.stringify({ type: "scroll", y: y }));
           } catch (e) {}
         }
-        window.addEventListener("scroll", function () {
+
+        // capture 단계로 받아서(가능하면) 타겟을 확보
+        window.addEventListener("scroll", function (e) {
+          try {
+            if (e && e.target) window.__rn_lastScrollTarget = e.target;
+          } catch (err) {}
+          if (ticking) return;
+          ticking = true;
+          window.requestAnimationFrame(function () {
+            ticking = false;
+            postScroll();
+          });
+        }, { passive: true, capture: true });
+
+        // 일부 브라우저/레이아웃에서 scroll 이벤트가 덜 오는 케이스 보완
+        window.addEventListener("touchmove", function () {
           if (ticking) return;
           ticking = true;
           window.requestAnimationFrame(function () {
@@ -148,6 +208,7 @@ class App extends React.Component {
             postScroll();
           });
         }, { passive: true });
+
         postScroll();
       })();
       true;
@@ -209,7 +270,11 @@ class App extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <StatusBar backgroundColor="white" style="dark" />
+        <StatusBar
+          backgroundColor="white"
+          style="dark"
+          translucent={false}
+        />
         {this.renderWebView()}
       </View>
     );
