@@ -14,6 +14,9 @@ import { WebView } from "react-native-webview";
 import { StatusBar } from "expo-status-bar";
 import Constants from "expo-constants";
 
+const APP_VERSION = Constants.expoConfig?.version ?? "1.1.1";
+const WEBVIEW_USER_AGENT = `Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36 NbbangApp/${APP_VERSION}`;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -218,8 +221,7 @@ class App extends React.Component {
       ref: this.webview,
       onNavigationStateChange: this.handleNavigationStateChange,
       onLoadEnd: this.handleLoadEnd,
-      userAgent:
-        "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
+      userAgent: WEBVIEW_USER_AGENT,
       originWhitelist: ["intent", "https", "kakaotalk"],
       onShouldStartLoadWithRequest: this.habdleIntentRequest,
       onMessage: this.handleMessage,
