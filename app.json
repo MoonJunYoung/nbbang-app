@@ -2,10 +2,15 @@
   "expo": {
     "name": "엔빵",
     "slug": "nbbang",
-    "version": "1.0.9",
+    "version": "1.0.13",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "androidStatusBar": {
+      "backgroundColor": "#ffffff",
+      "barStyle": "dark-content",
+      "translucent": false
+    },
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -15,13 +20,8 @@
       "supportsTablet": true
     },
     "android": {
-      "versionCode": 12,
-      "package": "nbbang.middle",
-      "packageQueries": [
-        {
-          "package": "com.kakao.talk"
-        }
-      ]
+      "versionCode": 16,
+      "package": "nbbang.middle"
     },
     "web": {
       "favicon": "./assets/favicon.png"
