@@ -30,7 +30,7 @@ class App extends React.Component {
     super(props);
     this.webview = React.createRef();
     this.state = {
-      currentUrl: "https://nbbang.shop/",
+      currentUrl: "https://nbbang.cloud/",
       canGoBack: false,
       refreshing: false,
       webScrollY: 0,
@@ -49,10 +49,10 @@ class App extends React.Component {
     const { currentUrl, canGoBack } = this.state;
 
     if (
-      currentUrl === "https://nbbang.shop/sign-in" ||
-      currentUrl === "https://nbbang.shop/sign-up"
+      currentUrl === "https://nbbang.cloud/sign-in" ||
+      currentUrl === "https://nbbang.cloud/sign-up"
     ) {
-      this.setState({ currentUrl: "https://nbbang.shop/signd" });
+      this.setState({ currentUrl: "https://nbbang.cloud/signd" });
       return true;
     }
 
@@ -68,8 +68,8 @@ class App extends React.Component {
     const newUrl = navState.url;
 
     if (
-      newUrl === "https://nbbang.shop/" ||
-      newUrl === "https://nbbang.shop/signd"
+      newUrl === "https://nbbang.cloud/" ||
+      newUrl === "https://nbbang.cloud/signd"
     ) {
       this.setState({ currentUrl: newUrl, canGoBack: false });
     } else {
