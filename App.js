@@ -80,7 +80,25 @@ class App extends React.Component {
     }
   };
 
+  openPlayStore = (url) => {
+    const packageIdMatch = url.match(/[?&]id=([^&]+)/);
+    const packageId = packageIdMatch?.[1] ?? "nbbang.middle";
+    const playStoreUrl = url.startsWith("market://")
+      ? `https://play.google.com/store/apps/details?id=${packageId}`
+      : url;
+
+    Linking.openURL(playStoreUrl);
+  };
+
   habdleIntentRequest = (event) => {
+    if (
+      Platform.OS === "android" &&
+      (event.url.includes("play.google.com") || event.url.startsWith("market://"))
+    ) {
+      this.openPlayStore(event.url);
+      return false;
+    }
+
     if (event.url.startsWith("https")) {
       return true;
     } else if (
