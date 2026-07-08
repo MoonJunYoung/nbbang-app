@@ -14,6 +14,9 @@ import { WebView } from "react-native-webview";
 import { StatusBar } from "expo-status-bar";
 import Constants from "expo-constants";
 
+const APP_VERSION = Constants.expoConfig?.version ?? "1.1.1";
+const WEBVIEW_USER_AGENT = `Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36 NbbangApp/${APP_VERSION}`;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -30,7 +33,7 @@ class App extends React.Component {
     super(props);
     this.webview = React.createRef();
     this.state = {
-      currentUrl: "https://nbbang.shop/",
+      currentUrl: "https://nbbang.cloud/",
       canGoBack: false,
       refreshing: false,
       webScrollY: 0,
@@ -49,10 +52,10 @@ class App extends React.Component {
     const { currentUrl, canGoBack } = this.state;
 
     if (
-      currentUrl === "https://nbbang.shop/sign-in" ||
-      currentUrl === "https://nbbang.shop/sign-up"
+      currentUrl === "https://nbbang.cloud/sign-in" ||
+      currentUrl === "https://nbbang.cloud/sign-up"
     ) {
-      this.setState({ currentUrl: "https://nbbang.shop/signd" });
+      this.setState({ currentUrl: "https://nbbang.cloud/signd" });
       return true;
     }
 
@@ -68,8 +71,8 @@ class App extends React.Component {
     const newUrl = navState.url;
 
     if (
-      newUrl === "https://nbbang.shop/" ||
-      newUrl === "https://nbbang.shop/signd"
+      newUrl === "https://nbbang.cloud/" ||
+      newUrl === "https://nbbang.cloud/signd"
     ) {
       this.setState({ currentUrl: newUrl, canGoBack: false });
     } else {
@@ -77,7 +80,25 @@ class App extends React.Component {
     }
   };
 
+  openPlayStore = (url) => {
+    const packageIdMatch = url.match(/[?&]id=([^&]+)/);
+    const packageId = packageIdMatch?.[1] ?? "nbbang.middle";
+    const playStoreUrl = url.startsWith("market://")
+      ? `https://play.google.com/store/apps/details?id=${packageId}`
+      : url;
+
+    Linking.openURL(playStoreUrl);
+  };
+
   habdleIntentRequest = (event) => {
+    if (
+      Platform.OS === "android" &&
+      (event.url.includes("play.google.com") || event.url.startsWith("market://"))
+    ) {
+      this.openPlayStore(event.url);
+      return false;
+    }
+
     if (event.url.startsWith("https")) {
       return true;
     } else if (
@@ -218,8 +239,7 @@ class App extends React.Component {
       ref: this.webview,
       onNavigationStateChange: this.handleNavigationStateChange,
       onLoadEnd: this.handleLoadEnd,
-      userAgent:
-        "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36",
+      userAgent: WEBVIEW_USER_AGENT,
       originWhitelist: ["intent", "https", "kakaotalk"],
       onShouldStartLoadWithRequest: this.habdleIntentRequest,
       onMessage: this.handleMessage,
